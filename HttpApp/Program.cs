@@ -90,20 +90,20 @@ namespace HttpApp
 
         private static HttpClientHandler GetClientHandler(string certificate, string password)
         {
-            X509Certificate2 certPfx;
+            var clientHandler = new HttpClientHandler
+            {
+                SslProtocols = SslProtocols.Tls12,
+                ClientCertificateOptions = ClientCertificateOption.Manual
+            };
             try
             {
-                certPfx = new X509Certificate2(certificate, password);
+                var certPfx = new X509Certificate2(certificate, password);
+                clientHandler.ClientCertificates.Add(certPfx);
             }
             catch (CryptographicException e)
             {
                 Console.WriteLine($"Error occured while trying to load certificate: {e.Message}");
-                return null;
             }
-            var clientHandler = new HttpClientHandler();
-            clientHandler.SslProtocols = SslProtocols.Tls12;
-            clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
-            clientHandler.ClientCertificates.Add(certPfx);
             clientHandler.ServerCertificateCustomValidationCallback +=
                 (HttpRequestMessage req, X509Certificate2 cert2, X509Chain chain, SslPolicyErrors err) => true;
             return clientHandler;

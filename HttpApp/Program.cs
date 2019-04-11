@@ -39,17 +39,21 @@ namespace HttpApp
                 var responseString = await HttpHelper.GetClientResponse(endpoint, request, headers, handler);
 
                 if (input?.Count <= 1 || responseString == null) continue;
-                try
-                {
-                    await File.WriteAllTextAsync(input[1], responseString);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Could not successfully complete writing file");
-                }
+                await ResponseToFile(input[1], responseString);
             }
         }
 
+        private static async Task ResponseToFile(string file, string response)
+        {
+            try
+            {
+                await File.WriteAllTextAsync(file, response);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Could not successfully complete writing file: {e.Message}");
+            }
+        }
 
         private static XElement GetElementByName(List<XElement> elements, string name)
         {

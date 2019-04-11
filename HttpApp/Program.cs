@@ -8,6 +8,7 @@ using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -19,9 +20,9 @@ namespace HttpApp
         {
             while (true)
             {
-                var input = GetFileFromPrompt("a valid file");
+                var input = GetInputFromPrompt("a valid xml file (and possibly a response name)");
 
-                var document = XDocument.Load(input);
+                var document = XDocument.Load(input?.First() ?? "");
                 var children = document.Root?.Elements()?.ToList();
 
                 var headers = new XDocument(GetElementByName(children, "Header"));
@@ -54,22 +55,18 @@ namespace HttpApp
                     Console.WriteLine(responseString);
                     Console.WriteLine("----------------------");
                     Console.WriteLine("----------------------");
+
+                    if (!(input?.Count > 1)) continue;
+                    try
+                    {
+                        await File.WriteAllTextAsync(input[1], responseString);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Could not complete writing file successfully");
+                    }
                 }
-
             }
-
-            //if (args.Length > 1)
-            //{
-            //    try
-            //    {
-            //        await File.WriteAllTextAsync(args[1], responseString);
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        Console.WriteLine("Could not complete writing file successfully");
-            //        throw;
-            //    }
-            //}
         }
 
 
@@ -121,6 +118,32 @@ namespace HttpApp
             }
 
             return line;
+        }
+
+        private static List<string> GetInputFromPrompt(string typeOfSpecification)
+        {
+            var message = string.Format("Please specify {0}:", typeOfSpecification);
+            Console.WriteLine(message);
+            var regex = new Regex("[^-\\s](.*\\\\(.+?)|.*/(.*?))\\.([^-\\s]+)");
+            var input = Console.ReadLine() ?? "";
+            var match = Regex.Match(input, regex.ToString());
+            while (!File.Exists(match.Value))
+            {
+                Console.WriteLine(message);
+                input = Console.ReadLine() ?? "";
+                match = Regex.Match(input, regex.ToString());
+            }
+
+            var response = new List<string> {match.Value};
+            input = input.Replace(match.Value, "").Trim();
+            if (input.Length > 0)
+            {
+                var oldEndLength = match.Value.Split("/\\".ToCharArray()).Last().Length;
+                var oldPath = match.Value.Substring(0, match.Value.Length - oldEndLength);
+                response.Add(oldPath + input + ".xml");
+            }
+
+            return response;
         }
     }
 }

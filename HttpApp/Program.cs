@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Security;
-using System.Security.Authentication;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -37,34 +33,19 @@ namespace HttpApp
                     var certificate = GetElementByName(login, "Certificate")?.Value;
                     var password = GetElementByName(login, "Password")?.Value;
 
-                    handler = GetClientHandler(certificate, password);
+                    handler = HttpHelper.GetClientHandler(certificate, password);
                 }
 
-                using (var client = handler != null ? new HttpClient(handler, true) : new HttpClient())
+                var responseString = await HttpHelper.GetClientResponse(endpoint, request, headers, handler);
+
+                if (input?.Count <= 1 || responseString == null) continue;
+                try
                 {
-                    AddHeaders(client, headers);
-
-                    var httpContent = new StringContent(request.ToString(), Encoding.UTF8, "application/xml");
-
-                    Console.WriteLine("Response from service:");
-                    Console.WriteLine("----------------------");
-                    var response = await client.PostAsync(endpoint, httpContent);
-
-                    var responseString = await response.Content.ReadAsStringAsync();
-
-                    Console.WriteLine(responseString);
-                    Console.WriteLine("----------------------");
-                    Console.WriteLine("----------------------");
-
-                    if (!(input?.Count > 1)) continue;
-                    try
-                    {
-                        await File.WriteAllTextAsync(input[1], responseString);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Could not complete writing file successfully");
-                    }
+                    await File.WriteAllTextAsync(input[1], responseString);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Could not successfully complete writing file");
                 }
             }
         }
@@ -73,37 +54,6 @@ namespace HttpApp
         private static XElement GetElementByName(List<XElement> elements, string name)
         {
             return elements.Find(it => it.Name == name);
-        }
-
-        private static void AddHeaders(HttpClient client, XDocument headerDoc)
-        {
-            var headers = headerDoc.Root?.Value.Split(";").ToList().FindAll(it => it.Contains(":"));
-            foreach (var header in headers ?? new List<string>())
-            {
-                var split = header.Trim().Split(":");
-                client.DefaultRequestHeaders.Add(split[0], split[1]);
-            }
-        }
-
-        private static HttpClientHandler GetClientHandler(string certificate, string password)
-        {
-            var clientHandler = new HttpClientHandler
-            {
-                SslProtocols = SslProtocols.Tls12,
-                ClientCertificateOptions = ClientCertificateOption.Manual
-            };
-            try
-            {
-                var certPfx = new X509Certificate2(certificate, password);
-                clientHandler.ClientCertificates.Add(certPfx);
-            }
-            catch (CryptographicException e)
-            {
-                Console.WriteLine($"Error occured while trying to load certificate: {e.Message}");
-            }
-            clientHandler.ServerCertificateCustomValidationCallback +=
-                (HttpRequestMessage req, X509Certificate2 cert2, X509Chain chain, SslPolicyErrors err) => true;
-            return clientHandler;
         }
 
         private static List<string> GetInputFromPrompt(string typeOfSpecification)

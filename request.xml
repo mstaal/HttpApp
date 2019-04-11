@@ -1,0 +1,33 @@
+<Root>
+    <Header>CvrNumber:10150817; roles:ActAsEmployee</Header>
+    <Request>
+        <ns4:RapportBestilRequest xmlns:ns2="urn:oio:ebst:diadem:1" 
+            xmlns:ns1="urn:oio:ebst:diadem:metadata:1" 
+            xmlns:ns4="urn:oio:ebst:diadem:3" 
+            xmlns:ns3="urn:oio:ebst:diadem:dibs:1">
+            <ns2:EjendomIdentifikator>001864</ns2:EjendomIdentifikator>
+            <ns2:KommuneIdentifikator>0350</ns2:KommuneIdentifikator>
+            <ns2:RapportSkabelonIdentifikator>BBBBBBBB-2222-BBBB-2222-BBBBBBBBBBBB</ns2:RapportSkabelonIdentifikator>
+            <ns2:RapportvalgmulighedValgSamling>
+                <ns2:RapportvalgmulighedValgIdentifikator>00000000-0000-0000-0000-000000000041</ns2:RapportvalgmulighedValgIdentifikator>
+            </ns2:RapportvalgmulighedValgSamling>
+            <ns2:AdviseringsAdresse>
+                <ns2:EmailAdresseIdentifikator>y2@netcompany.com</ns2:EmailAdresseIdentifikator>
+                <ns2:TelefonNummerIdentifikator>4530252509</ns2:TelefonNummerIdentifikator>
+            </ns2:AdviseringsAdresse>
+            <ns2:FuldmagtIndhentetIndikator>false</ns2:FuldmagtIndhentetIndikator>
+            <ns2:RapportFortroligIndikator>false</ns2:RapportFortroligIndikator>
+            <ns2:EgenReferenceObjekt>
+                <ns2:EgenReferenceTekst>Postman test</ns2:EgenReferenceTekst>
+                <ns2:EgenReferenceScopeTekst>om</ns2:EgenReferenceScopeTekst>
+            </ns2:EgenReferenceObjekt>
+            <ns2:TvangsauktionIndikator>false</ns2:TvangsauktionIndikator>
+            <ns2:TvangsauktionDato>2018-10-08Z</ns2:TvangsauktionDato>
+        </ns4:RapportBestilRequest>
+    </Request>
+    <Endpoint>https://erst-apitest.virk.dk/ejendomsdatarapport/rapport/rapportBestil</Endpoint>
+    <Auth>
+        <Certificate>C:\ErstRepo\diadem-base-plugin\tools\certificates\nonprod\Erhvervs- og Selskabsstyrelsen - ERST-TEST-Diadem-B2B.p12</Certificate>
+        <Password>Test1234</Password>
+    </Auth>-->
+</Root>

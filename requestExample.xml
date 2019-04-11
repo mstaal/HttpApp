@@ -28,6 +28,6 @@
     <Endpoint>https://erst-apitest.virk.dk/ejendomsdatarapport/rapport/rapportBestil</Endpoint>
     <Auth>
         <Certificate>C:\ErstRepo\diadem-base-plugin\tools\certificates\nonprod\Erhvervs- og Selskabsstyrelsen - ERST-TEST-Diadem-B2B.p12</Certificate>
-        <Password>Test1234</Password>
+        <Password>FILL IN</Password>
     </Auth>-->
 </Root>

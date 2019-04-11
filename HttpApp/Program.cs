@@ -106,20 +106,6 @@ namespace HttpApp
             return clientHandler;
         }
 
-        private static string GetFileFromPrompt(string typeOfSpecification)
-        {
-            var message = string.Format("Please specify {0}:", typeOfSpecification);
-            Console.WriteLine(message);
-            var line = Console.ReadLine();
-            while (!File.Exists(line))
-            {
-                Console.WriteLine(message);
-                line = Console.ReadLine();
-            }
-
-            return line;
-        }
-
         private static List<string> GetInputFromPrompt(string typeOfSpecification)
         {
             var message = string.Format("Please specify {0}:", typeOfSpecification);

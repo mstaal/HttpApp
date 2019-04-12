@@ -59,12 +59,11 @@ namespace HttpApp
 
                 Console.WriteLine("Response from service:");
                 Console.WriteLine("----------------------");
-                var response = await client.PostAsync(endpoint, httpContent);
 
-                string responseString = null;
+                string response = null;
                 try
                 {
-                    responseString = await response.Content.ReadAsStringAsync();
+                    response = await (await client.PostAsync(endpoint, httpContent)).Content.ReadAsStringAsync();
                 }
                 catch (Exception e)
                 {
@@ -72,11 +71,11 @@ namespace HttpApp
                     Console.WriteLine(message);
                 }
 
-                Console.WriteLine(responseString);
+                Console.WriteLine(response);
                 Console.WriteLine("----------------------");
                 Console.WriteLine("----------------------");
 
-                return responseString;
+                return response;
             }
         }
     }

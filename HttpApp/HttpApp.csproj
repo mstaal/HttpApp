@@ -6,4 +6,8 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="System.Json" Version="4.5.0" />
+  </ItemGroup>
 </Project>

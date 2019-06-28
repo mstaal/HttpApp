@@ -21,9 +21,10 @@ namespace HttpApp
                 var children = document.Root?.Elements()?.ToList();
 
                 var headers = new XDocument(GetElementByName(children, "Header"));
-                var request = new XDocument(GetElementByName(children, "Request").Elements().First());
+                var request = new XDocument(GetElementByName(children, "Request")?.Elements()?.First());
                 var endpoint = GetElementByName(children, "Endpoint")?.Value;
                 var auth = new XDocument(GetElementByName(children, "Auth"));
+                var parallel = GetElementByName(children, "Parallel")?.Value;
 
                 HttpClientHandler handler = null;
                 if (auth?.Root?.Value != null)
@@ -35,7 +36,14 @@ namespace HttpApp
                     handler = HttpHelper.GetClientHandler(certificate, password);
                 }
 
-                var responseString = await HttpHelper.GetClientResponse(endpoint, request, headers, handler);
+                int.TryParse(parallel, out int repeatInt);
+                if (repeatInt <= 0) repeatInt = 1;
+                string responseString = null;
+
+                Parallel.For(0, repeatInt, _ =>
+                {
+                    responseString = HttpHelper.GetClientResponse(endpoint, request, headers, handler).Result;
+                });
 
                 if (input?.Count <= 1 || responseString == null) continue;
                 await ResponseToFile(input[1], responseString);

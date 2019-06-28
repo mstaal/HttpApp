@@ -14,6 +14,12 @@ namespace HttpApp
 {
     public static class HttpHelper
     {
+        private static readonly Dictionary<string, SslProtocols> SecurityProtocols = new Dictionary<string, SslProtocols>
+        {
+            { "TLS1", SslProtocols.Tls }, { "TLS11", SslProtocols.Tls11 }, { "TLS12", SslProtocols.Tls12 },
+            { "None", SslProtocols.None }
+        };
+
         private static void AddHeaders(HttpClient client, XDocument headerDoc)
         {
             var headers = headerDoc.Root?.Value.Split(";").ToList().FindAll(it => it.Contains(":"));
@@ -28,7 +34,7 @@ namespace HttpApp
         {
             var clientHandler = new HttpClientHandler
             {
-                SslProtocols = SslProtocols.Tls12,
+                SslProtocols = SecurityProtocols["TLS12"],
                 ClientCertificateOptions = ClientCertificateOption.Manual
             };
             try
@@ -55,7 +61,7 @@ namespace HttpApp
             {
                 AddHeaders(client, headers);
 
-                var httpContent = new StringContent(request.ToString(), Encoding.UTF8, "application/xml");
+                var httpContent = new StringContent(request?.ToString(), Encoding.UTF8, "application/xml");
 
                 Console.WriteLine("Response from service:");
                 Console.WriteLine("----------------------");
